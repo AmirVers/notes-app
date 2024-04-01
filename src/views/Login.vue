@@ -56,7 +56,7 @@ const login = () => {
     </div>
     <div class="inline-flex flex-col mt-5 gap-5 translate-x-2">
       <div v-if="errMsg">
-        <h3>{{ errMsg }}</h3>
+        <h3 class="text-red-500">{{ errMsg }}</h3>
       </div>
       <div>
         <h5 class="text-md tracking-wider font-medium mb-1">Email</h5>

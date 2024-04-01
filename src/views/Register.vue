@@ -2,42 +2,46 @@
 import { RouterLink } from 'vue-router'
 import { ref } from 'vue'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getFirestore, addDoc, collection } from 'firebase/firestore'
 import { useRouter } from 'vue-router'
 
+const router = useRouter()
+const db = getFirestore()
+
+const errMsg = ref('')
 const username = ref('')
 const email = ref('')
 const password = ref('')
 const signedUp = ref(false)
-const router = useRouter()
-const register = () => {
-  const auth = getAuth()
-  createUserWithEmailAndPassword(auth, email.value, password.value)
-    .then(() => {
-      console.log('Success')
-      signedUp.value = true
-      setTimeout(() => {
-        router.push('/')
-      }, 1500)
+
+const register = async () => {
+  try {
+    const auth = getAuth()
+    const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
+
+    const user = userCredential.user
+
+    await addDoc(collection(db, 'Profiles'), {
+      username: username.value,
+      email: user.email,
+      uid: user.uid
     })
-    .catch((err) => {
-      console.log('Error', err.code)
-      const errCode = err.code
-      switch (errCode) {
-        case 'auth/invalid-email':
-          alert('Invalid email')
-          break
-        case 'auth/email-already-in-use':
-          alert('Email already in use')
-          router.push('/login')
-          break
-        case 'auth/weak-password':
-          alert('Weak password')
-          break
-        default:
-          alert('Something went wrong')
-          break
-      }
-    })
+    signedUp.value = true
+    setTimeout(() => {
+      router.push('/')
+    }, 1500)
+  } catch (error) {
+    console.log(error)
+    switch (error.code) {
+      case 'auth/invalid-email':
+      case 'auth/email-already-in-use':
+        errMsg.value = 'Email already in use or invalid'
+        break
+      default:
+        errMsg.value = 'Something went wrong'
+        break
+    }
+  }
 }
 </script>
 <template>
@@ -47,12 +51,15 @@ const register = () => {
       Congrats, you have successfully signed up <span class="ml-2">🔥🔥🔥</span>
     </h4>
   </div>
+
   <div v-else class="flex justify-center items-center flex-col translate-y-1/4">
     <div>
       <h1 class="text-2xl font-bold tracking-wider text-center">Sign Up</h1>
     </div>
+
     <div class="inline-flex flex-col mt-8 gap-8">
       <div>
+        <h4 class="text-red-600 font-semibold">{{ errMsg }}</h4>
         <h5 class="text-md tracking-wider font-medium mb-1">Username</h5>
         <input
           v-model="username"
