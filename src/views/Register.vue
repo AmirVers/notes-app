@@ -2,7 +2,7 @@
 import { RouterLink } from 'vue-router'
 import { ref } from 'vue'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
-import { getFirestore, addDoc, collection } from 'firebase/firestore'
+import { getFirestore, setDoc, collection, doc } from 'firebase/firestore'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -21,11 +21,12 @@ const register = async () => {
 
     const user = userCredential.user
 
-    await addDoc(collection(db, 'Profiles'), {
+    await setDoc(doc(collection(db, 'Profiles'), user.uid), {
       username: username.value,
       email: user.email,
-      uid: user.uid
+      id: user.uid
     })
+
     signedUp.value = true
     setTimeout(() => {
       router.push('/')
@@ -64,6 +65,7 @@ const register = async () => {
         <input
           v-model="username"
           type="text"
+          maxlength="10"
           placeholder="Enter your username"
           class="border-2 border-gray-400 rounded-md py-1 pl-2 px-[106px]"
         />

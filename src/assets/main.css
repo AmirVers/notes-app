@@ -31,6 +31,10 @@ input {
   outline: none;
 }
 
+.add-btn .active {
+  background-color: rgb(50, 50, 50);
+  padding: 2px;
+}
 .active {
   padding: 6px 24px;
   border-radius: 12px;

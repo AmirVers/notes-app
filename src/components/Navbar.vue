@@ -76,7 +76,7 @@ onMounted(() => {
         <ul @click="activate">
           <RouterLink to="/Todos">Todos</RouterLink>
         </ul>
-        <ul class="hover:opacity-60 transition">
+        <ul @click="activate" class="add-btn hover:opacity-70 rounded-lg transition">
           <RouterLink to="/AddNote"><Add /></RouterLink>
         </ul>
       </div>
@@ -97,6 +97,10 @@ onMounted(() => {
   background: #ebb332;
   opacity: 0.8;
   transition: ease 0.2s;
+}
+.add-btn.active {
+  opacity: 0.7;
+  background: #fff;
 }
 .setting:hover {
   opacity: 0.9;

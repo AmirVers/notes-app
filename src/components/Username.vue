@@ -1,24 +1,44 @@
 <script setup>
 import { doc, getDoc, getFirestore } from 'firebase/firestore'
-
+import { getAuth } from 'firebase/auth'
+import { ref } from 'vue'
 import turnOff from '@/assets/icon/turnOff.svg'
+
+defineProps({
+  dropMenu: Boolean
+})
+
+const emit = defineEmits(['signOut', 'dropMenu'])
+
+const auth = getAuth()
+const currentUser = auth.currentUser
 
 const db = getFirestore()
 
-const emit = defineEmits(['signOut', 'dropMenu'])
-defineProps({
-  dropMenu: Boolean
+const loadUserInfo = async () => {
+  const docRef = doc(db, 'Profiles', currentUser.uid)
+  try {
+    const docSnap = await getDoc(docRef)
+
+    return docSnap.data()
+  } catch (error) {
+    console.log(error)
+  }
+}
+const userInfo = ref(null)
+loadUserInfo().then((res) => {
+  userInfo.value = res
 })
 </script>
 
 <template>
-  <div class="ml-8 flex items-center">
+  <div v-if="userInfo" class="ml-8 flex items-center">
     <button @click="emit('dropMenu')" class="flex items-center">
       <img src="../assets/img/ava (1).png" alt="ava" class="w-10 rounded-full" />
-      <span class="ml-5 text-xl font-medium">Vers</span>
+      <span class="ml-5 text-xl font-medium">{{ userInfo.username }}</span>
     </button>
 
-    <div v-if="dropMenu" class="drop-menu ml-6 items-center bg-white rounded-lg">
+    <div v-if="dropMenu" class="drop-menu items-center bg-white rounded-lg">
       <button
         @click="emit('signOut')"
         class="flex items-center py-2 pr-4 transition duration-300 hover:bg-[#dadada] hover:rounded-lg"
@@ -29,11 +49,12 @@ defineProps({
     </div>
   </div>
 </template>
+
 <style scoped>
 .drop-menu {
-  position: relative;
-  top: 115%;
-  right: 150px;
+  position: absolute;
+  left: 130px;
+  top: 205px;
   z-index: 10;
   animation: anim 0.8s ease-out 0s 1 normal forwards;
   transition: all 0.35s ease;

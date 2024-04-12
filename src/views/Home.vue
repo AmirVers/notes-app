@@ -1,24 +1,14 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { notesStore } from '@/stores/notesStore'
 import noteIco from '@/assets/icon/note.svg'
 import Note from '@/components/Note.vue'
 
 const registred = ref(false)
 const auth = getAuth()
-
+const noteInfo = notesStore()
 const notes = ref([])
-
-const getNotes = async () => {
-  try {
-    const data = await fetch('https://eb94cfa014448882.mokky.dev/notes')
-    const res = await data.json()
-    notes.value.push(...res)
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 onMounted(() => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -27,7 +17,7 @@ onMounted(() => {
       registred.value = false
     }
   })
-  getNotes()
+  noteInfo.getNotes(notes)
 })
 </script>
 
@@ -38,10 +28,15 @@ onMounted(() => {
         <noteIco class="mt-1" /><span class="text-xl font-medium -translate-x-1">All Notes</span>
       </div>
       <div class="mt-4 ml-5 text-lg text-indigo-400 font-medium">
-        <h4>124 Notes</h4>
+        <h4>{{ notes.length }} Notes</h4>
       </div>
-      <div class="mt-10 ml-5 flex flex-col gap-4 pb-6 pr-4">
-        <Note v-for="note in notes" :key="note.id" :note="note" />
+      <div class="mt-10 ml-5 flex flex-col gap-4 pb-6 pr-4 overflow-hidden">
+        <Note v-for="note in notes.slice(0, 3)" :key="note.id" :note="note" />
+        <div v-if="notes.length > 3" class="text-gray-500">
+          <RouterLink to="/Notes" class="underline hover:opacity-70"
+            >And {{ notes.length - 3 }} more...</RouterLink
+          >
+        </div>
       </div>
     </div>
   </div>
