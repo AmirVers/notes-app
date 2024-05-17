@@ -5,9 +5,12 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { getFirestore, setDoc, collection, doc } from 'firebase/firestore'
 import { useRouter } from 'vue-router'
 
+import Loading from '@/components/Loading.vue'
+
 const router = useRouter()
 const db = getFirestore()
 
+const loading = ref(false)
 const errMsg = ref('')
 const username = ref('')
 const email = ref('')
@@ -28,7 +31,9 @@ const register = async () => {
     })
 
     signedUp.value = true
+    loading.value = true
     setTimeout(() => {
+      loading.value = false
       router.push('/')
     }, 1500)
   } catch (error) {
@@ -46,6 +51,8 @@ const register = async () => {
 }
 </script>
 <template>
+  <Loading v-if="loading" />
+
   <div v-if="signedUp" class="flex flex-col justify-center items-center translate-y-1/4">
     <img src="../assets/img/Gj.jpg" alt="Great Job" class="w-80 h-80" />
     <h4 class="text-3xl font-semibold text-center mt-5 text-violet-600">
@@ -53,7 +60,7 @@ const register = async () => {
     </h4>
   </div>
 
-  <div v-else class="flex justify-center items-center flex-col translate-y-1/4">
+  <div v-else-if="!signedUp" class="flex justify-center items-center flex-col translate-y-1/4">
     <div>
       <h1 class="text-2xl font-bold tracking-wider text-center">Sign Up</h1>
     </div>
@@ -61,6 +68,9 @@ const register = async () => {
     <div class="inline-flex flex-col mt-8 gap-8">
       <div>
         <h4 class="text-red-600 font-semibold">{{ errMsg }}</h4>
+        <h5 v-if="username.length == 10" class="text-red-600 font-semibold">
+          Username must not exceed 10 characters
+        </h5>
         <h5 class="text-md tracking-wider font-medium mb-1">Username</h5>
         <input
           v-model="username"

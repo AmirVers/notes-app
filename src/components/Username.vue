@@ -52,9 +52,12 @@ loadUserInfo().then((res) => {
 
 <style scoped>
 .drop-menu {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.1);
   position: absolute;
-  left: 130px;
-  top: 205px;
+  left: 30px;
+  top: 75px;
   z-index: 10;
   animation: anim 0.8s ease-out 0s 1 normal forwards;
   transition: all 0.35s ease;

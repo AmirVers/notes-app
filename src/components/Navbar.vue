@@ -51,7 +51,7 @@ onMounted(() => {
 
 <template>
   <div class="pt-32">
-    <nav class="flex justify-between bg-white max-w-screen-xl mx-auto py-1 rounded-lg">
+    <nav class="flex justify-between bg-white max-w-screen mx-auto py-1 rounded-lg relative">
       <Username
         v-if="registered"
         :dropMenu="dropMenu"
@@ -70,6 +70,7 @@ onMounted(() => {
         <ul @click="activate">
           <RouterLink to="/Projects">Projects</RouterLink>
         </ul>
+
         <ul @click="activate">
           <RouterLink to="/Business">Business</RouterLink>
         </ul>
